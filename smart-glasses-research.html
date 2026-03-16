@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartVision Lab — Intelligent Eyewear Systems Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#000;--ink:#0c0c0e;--surface:#111113;--card:#17171a;--lift:#1e1e22;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --white:#f2f2f7;--muted:rgba(242,242,247,.52);--muted2:rgba(242,242,247,.3);
+  --blue:#0a84ff;--blue-d:rgba(10,132,255,.12);
+  --amber:#ff9f0a;--amber-d:rgba(255,159,10,.12);
+  --green:#34c759;--green-d:rgba(52,199,89,.12);
+  --fd:'Playfair Display',Georgia,serif;
+  --fb:'DM Sans',sans-serif;
+  --fm:'DM Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--white);font-family:var(--fb);font-weight:300;overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased;}
+
+/* cursor */
+#cr{position:fixed;width:6px;height:6px;background:var(--white);border-radius:50%;pointer-events:none;z-index:9999;mix-blend-mode:difference;transform:translate(-50%,-50%);transition:width .15s,height .15s;}
+#crr{position:fixed;width:38px;height:38px;border:1px solid rgba(255,255,255,.28);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .22s,height .22s;}
+
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 52px;backdrop-filter:blur(22px) saturate(180%);background:rgba(0,0,0,.76);border-bottom:1px solid var(--border);}
+.nb{font-family:var(--fm);font-size:12px;letter-spacing:.16em;opacity:.9;}
+.nl{display:flex;gap:32px;list-style:none;}
+.nl a{font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.04em;transition:color .2s;}
+.nl a:hover{color:var(--white);}
+
+/* hero */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:140px 44px 100px;position:relative;overflow:hidden;}
+.hg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 72% 52% at 50% 22%,rgba(10,132,255,.1) 0%,transparent 65%),radial-gradient(ellipse 42% 42% at 16% 76%,rgba(255,159,10,.06) 0%,transparent 58%),radial-gradient(ellipse 42% 42% at 84% 70%,rgba(52,199,89,.06) 0%,transparent 58%);}
+.hgrid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.024) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.024) 1px,transparent 1px);background-size:58px 58px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);}
+.heb{font-family:var(--fm);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:32px;opacity:0;animation:rise .9s ease .15s forwards;}
+.hh1{font-family:var(--fd);font-weight:900;font-size:clamp(52px,7.5vw,108px);line-height:1.02;letter-spacing:-.03em;margin-bottom:28px;opacity:0;animation:rise .9s ease .3s forwards;}
+.hh1 em{font-style:italic;color:transparent;background:linear-gradient(128deg,#0a84ff 0%,#38b6ff 45%,#34c759 100%);-webkit-background-clip:text;background-clip:text;}
+.hs{font-size:20px;color:var(--muted);max-width:540px;line-height:1.65;margin-bottom:52px;opacity:0;animation:rise .9s ease .45s forwards;}
+.hcta{display:flex;gap:14px;opacity:0;animation:rise .9s ease .6s forwards;}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:980px;font-size:14px;font-weight:500;text-decoration:none;transition:all .22s;cursor:none;}
+.ps{background:var(--blue);color:#fff;}
+.ps:hover{background:#2d9cff;transform:scale(1.03);}
+.po{border:1px solid rgba(10,132,255,.4);color:var(--blue);}
+.po:hover{background:var(--blue-d);border-color:var(--blue);}
+
+/* ticker */
+.ticker{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(255,255,255,.015);}
+.ti{display:flex;width:max-content;animation:scroll 30s linear infinite;padding:16px 0;}
+.titem{display:flex;align-items:center;gap:20px;padding:0 44px;font-family:var(--fm);font-size:11px;letter-spacing:.12em;color:var(--muted);white-space:nowrap;}
+.titem::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+
+/* shared */
+section{padding:140px 52px;}
+.lbl{font-family:var(--fm);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.h2{font-family:var(--fd);font-size:clamp(38px,4.8vw,60px);font-weight:900;line-height:1.07;letter-spacing:-.025em;margin-bottom:20px;}
+.bt{font-size:17px;color:var(--muted);line-height:1.72;}
+.mxw{max-width:1200px;margin:0 auto;}
+
+/* problem */
+.prob-bg{background:var(--ink);}
+.prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.sc-stack{display:flex;flex-direction:column;gap:4px;}
+.sc{border-radius:20px;overflow:hidden;border:1px solid var(--border);background:var(--card);cursor:none;transition:border-color .25s,background .25s;}
+.sc:hover{background:var(--lift);border-color:var(--border2);}
+.sc-hd{padding:26px 30px 0;display:flex;align-items:center;gap:16px;}
+.sc-num{font-family:var(--fm);font-size:11px;letter-spacing:.14em;color:var(--muted2);flex-shrink:0;}
+.sc-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.i-rec{background:rgba(255,69,58,.12);} .i-play{background:rgba(10,132,255,.12);} .i-ai{background:rgba(52,199,89,.12);}
+.sc-title{font-weight:500;font-size:15px;}
+.sc-body{padding:12px 30px 22px;font-size:13px;color:var(--muted);line-height:1.65;}
+.sc-tags{padding:0 30px 24px;display:flex;flex-wrap:wrap;gap:7px;border-top:1px solid var(--border);padding-top:16px;margin-top:2px;}
+.tag{font-family:var(--fm);font-size:10px;letter-spacing:.09em;padding:4px 11px;border-radius:980px;border:1px solid var(--border2);color:var(--muted);transition:all .2s;}
+.sc:hover .tag{border-color:rgba(255,255,255,.18);color:rgba(242,242,247,.7);}
+.prob-copy{padding-top:6px;}
+.prob-copy .h2{margin-bottom:24px;}
+.prob-copy .bt{margin-bottom:36px;}
+.clist{display:flex;flex-direction:column;gap:20px;}
+.ci{display:flex;gap:18px;align-items:flex-start;}
+.cico{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.cia{background:var(--amber-d);} .cib{background:var(--blue-d);} .cig{background:var(--green-d);}
+.ct{font-size:14px;font-weight:500;margin-bottom:3px;}
+.cb{font-size:13px;color:var(--muted);line-height:1.55;}
+
+/* solutions intro */
+.sol-intro{background:var(--black);text-align:center;padding:120px 52px 72px;}
+.sol-intro .h2{max-width:680px;margin:0 auto 18px;}
+.sol-intro .bt{max-width:540px;margin:0 auto;}
+
+/* cards */
+.cards-wrap{background:var(--black);padding:0 52px 140px;}
+.cg{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border-radius:28px;overflow:hidden;border:1px solid var(--border);}
+.sc2{background:var(--surface);padding:58px 42px;display:flex;flex-direction:column;position:relative;overflow:hidden;cursor:none;transition:background .3s;}
+.sc2:hover{background:#131316;}
+.sc2::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s;}
+.sf::after{background:linear-gradient(90deg,var(--blue),#5ac8fa);}
+.sa::after{background:linear-gradient(90deg,var(--amber),#ffd60a);}
+.sg::after{background:linear-gradient(90deg,var(--green),#30d158);}
+.sc2:hover::after{opacity:1;}
+.sbadge{display:inline-flex;align-items:center;gap:7px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 13px;border-radius:980px;border:1px solid;margin-bottom:34px;width:fit-content;}
+.bbl{color:var(--blue);border-color:rgba(10,132,255,.35);background:var(--blue-d);}
+.bba{color:var(--amber);border-color:rgba(255,159,10,.35);background:var(--amber-d);}
+.bbg{color:var(--green);border-color:rgba(52,199,89,.35);background:var(--green-d);}
+.snum{font-family:var(--fm);font-size:11px;color:var(--muted2);letter-spacing:.1em;margin-bottom:10px;}
+.shl{font-family:var(--fd);font-size:26px;font-weight:700;line-height:1.2;letter-spacing:-.01em;margin-bottom:10px;}
+.ssl{font-size:15px;margin-bottom:22px;}
+.sf .ssl{color:var(--blue);} .sa .ssl{color:var(--amber);} .sg .ssl{color:var(--green);}
+.sdesc{font-size:13px;color:var(--muted);line-height:1.7;flex:1;}
+.sdiv{height:1px;background:var(--border);margin:34px 0;}
+.sr{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;}
+.sr:last-child{margin-bottom:0;}
+.sk{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--muted2);text-transform:uppercase;}
+.sv{font-size:12px;font-weight:500;}
+.svb{color:var(--blue);} .sva{color:var(--amber);} .svg{color:var(--green);}
+
+/* detail */
+.di{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:center;}
+.di.fl{direction:rtl;}.di.fl>*{direction:ltr;}
+.dc .lbl{margin-bottom:12px;} .dc .h2{margin-bottom:22px;} .dc .bt{margin-bottom:36px;}
+.fl-list{list-style:none;display:flex;flex-direction:column;gap:13px;}
+.fl-item{display:flex;align-items:flex-start;gap:13px;font-size:13px;color:var(--muted);line-height:1.6;}
+.fld{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+
+/* visual boxes */
+.vb{border-radius:24px;overflow:hidden;aspect-ratio:5/4;position:relative;display:flex;align-items:center;justify-content:center;}
+.vbbl{background:#040d1a;border:1px solid rgba(10,132,255,.18);}
+.vba{background:#120a00;border:1px solid rgba(255,159,10,.18);}
+.vbg{background:#010f05;border:1px solid rgba(52,199,89,.15);}
+
+/* FPGA grid */
+.fgbg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(7,1fr);gap:1px;opacity:.22;}
+.gc{border:1px solid rgba(10,132,255,.15);animation:gcp 3.5s ease-in-out infinite;}
+.gc:nth-child(3n+1){animation-delay:.6s;}.gc:nth-child(5n+2){animation-delay:1.2s;}.gc:nth-child(7n+3){animation-delay:1.8s;}
+.fbg{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:34px;width:100%;}
+.fb{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;letter-spacing:.05em;}
+.fbon{background:rgba(10,132,255,.17);border:1px solid rgba(10,132,255,.44);color:var(--blue);animation:fbb 2.3s ease-in-out infinite;}
+.fbof{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);color:var(--muted2);}
+.fbon:nth-child(3n){animation-delay:.45s;}.fbon:nth-child(5n){animation-delay:.9s;}
+
+/* ASIC visual */
+.av{padding:50px;text-align:center;position:relative;z-index:2;width:100%;}
+.pd{font-family:var(--fd);font-size:96px;font-weight:900;color:var(--amber);line-height:1;margin-bottom:4px;text-shadow:0 0 60px rgba(255,159,10,.28);}
+.pu{font-family:var(--fm);font-size:13px;color:var(--amber);letter-spacing:.14em;margin-bottom:28px;}
+.pbw{width:100%;background:rgba(255,255,255,.05);border-radius:3px;height:3px;margin:0 auto 10px;max-width:200px;overflow:hidden;}
+.pb{height:100%;border-radius:3px;}
+.pb1{width:30%;background:var(--amber);animation:barp 2s ease-in-out infinite;}
+.pb2{width:100%;background:rgba(255,255,255,.12);}
+.pc{font-family:var(--fm);font-size:10px;color:var(--muted2);letter-spacing:.1em;margin-bottom:14px;}
+.ps2{display:inline-block;background:rgba(255,159,10,.1);border:1px solid rgba(255,159,10,.3);color:var(--amber);font-family:var(--fm);font-size:10px;letter-spacing:.1em;padding:6px 16px;border-radius:980px;margin-top:12px;}
+
+/* split visual */
+.spv{width:100%;height:100%;padding:40px;position:relative;z-index:2;}
+.nl2{position:relative;width:100%;height:100%;min-height:220px;}
+.nd{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--fm);font-size:8px;letter-spacing:.05em;text-align:center;line-height:1.3;}
+.ndg{width:76px;height:76px;background:rgba(52,199,89,.15);border:2px solid var(--green);color:var(--green);top:50%;left:10%;transform:translateY(-50%);animation:ndp 2.3s ease-in-out infinite;}
+.ndp{width:60px;height:60px;background:rgba(52,199,89,.08);border:1.5px solid rgba(52,199,89,.5);color:rgba(52,199,89,.8);top:18%;right:20%;transform:translateY(-50%);animation:ndp 2.3s ease-in-out infinite .5s;}
+.ndc{width:48px;height:48px;background:rgba(52,199,89,.04);border:1px solid rgba(52,199,89,.25);color:rgba(52,199,89,.5);bottom:20%;right:14%;transform:translateY(50%);animation:ndp 2.3s ease-in-out infinite 1s;}
+.edge{position:absolute;background:linear-gradient(90deg,transparent,rgba(52,199,89,.35),transparent);height:1px;animation:ef 2.5s linear infinite;}
+.e1{width:44%;top:40%;left:15%;transform:rotate(-22deg);transform-origin:left;}
+.e2{width:28%;top:63%;left:19%;transform:rotate(18deg);transform-origin:left;}
+.scap{position:absolute;bottom:-2px;left:0;right:0;text-align:center;font-family:var(--fm);font-size:9px;letter-spacing:.12em;color:rgba(52,199,89,.42);}
+
+/* compare */
+.cmp{background:var(--ink);}
+.cmph{text-align:center;margin-bottom:68px;}
+.cmph .h2{margin-bottom:14px;}
+.ctbl{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+.ctbl th{padding:20px 26px;text-align:left;background:var(--surface);font-family:var(--fm);font-size:11px;letter-spacing:.1em;color:var(--muted);font-weight:400;border-bottom:1px solid var(--border);}
+.ctbl td{padding:17px 26px;font-size:13px;background:var(--card);border-bottom:1px solid var(--border);transition:background .15s;}
+.ctbl tr:last-child td{border-bottom:none;}
+.ctbl tr:hover td{background:var(--lift);}
+.ctbl td:first-child{color:var(--muted);}
+.tg{color:var(--green);font-weight:500;} .tm{color:var(--amber);font-weight:500;} .td{color:var(--muted2);}
+
+/* cta */
+.cta{background:var(--black);text-align:center;padding:160px 52px;position:relative;overflow:hidden;}
+.cg2{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 55% 55% at 50% 50%,rgba(10,132,255,.07) 0%,transparent 70%);}
+.cta .h2{margin-bottom:20px;position:relative;}
+.cta .bt{max-width:460px;margin:0 auto 50px;position:relative;}
+
+/* footer */
+footer{background:var(--ink);padding:52px;border-top:1px solid var(--border);}
+.fr{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;}
+.fbrand{font-family:var(--fm);font-size:11px;letter-spacing:.14em;color:var(--muted);}
+.flinks{display:flex;gap:30px;list-style:none;}
+.flinks a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.flinks a:hover{color:var(--white);}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .8s ease,transform .8s ease;}
+.rv.in{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
+
+/* keyframes */
+@keyframes rise{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@keyframes gcp{0%,100%{background:transparent;}50%{background:rgba(10,132,255,.06);}}
+@keyframes fbb{0%,100%{opacity:1;}50%{opacity:.32;}}
+@keyframes barp{0%,100%{opacity:1;}50%{opacity:.5;}}
+@keyframes ndp{0%,100%{box-shadow:0 0 0 0 rgba(52,199,89,.3);}50%{box-shadow:0 0 0 10px rgba(52,199,89,0);}}
+@keyframes ef{0%{opacity:0;}40%{opacity:1;}100%{opacity:0;}}
+
+@media(max-width:920px){
+  nav{padding:0 20px;} .nl{display:none;}
+  section{padding:80px 24px;} .hero{padding:100px 24px 80px;}
+  .prob-grid,.di,.di.fl{grid-template-columns:1fr;gap:48px;direction:ltr;}
+  .cg{grid-template-columns:1fr;} .fr{flex-direction:column;gap:20px;}
+}
+</style>
+</head>
+<body>
+
+<div id="cr"></div>
+<div id="crr"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nb">SMARTVISION LAB</div>
+  <ul class="nl">
+    <li><a href="#problem">The Problem</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="#fpga">FPGA</a></li>
+    <li><a href="#asic">ASIC</a></li>
+    <li><a href="#split">Split</a></li>
+    <li><a href="#compare">Compare</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hg"></div>
+  <div class="hgrid"></div>
+  <p class="heb">SmartVision Research Lab</p>
+  <h1 class="hh1">Intelligence<br><em>at the edge</em><br>of your vision</h1>
+  <p class="hs">We build the computing systems that make smart glasses truly smart — always-on, always-aware, and light enough to wear all day.</p>
+  <div class="hcta">
+    <a href="#problem" class="pill ps">Explore Our Research</a>
+    <a href="#compare" class="pill po">Compare Approaches</a>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ti">
+    <div class="titem">First-Person Capture</div>
+    <div class="titem">Highlight Replay</div>
+    <div class="titem">Always-On AI</div>
+    <div class="titem">Edge Inference</div>
+    <div class="titem">Low-Power CNN</div>
+    <div class="titem">FPGA Accelerator</div>
+    <div class="titem">Custom ASIC</div>
+    <div class="titem">Split Computing</div>
+    <div class="titem">MobiCom Research</div>
+    <div class="titem">28nm FD-SOI</div>
+    <div class="titem">First-Person Capture</div>
+    <div class="titem">Highlight Replay</div>
+    <div class="titem">Always-On AI</div>
+    <div class="titem">Edge Inference</div>
+    <div class="titem">Low-Power CNN</div>
+    <div class="titem">FPGA Accelerator</div>
+    <div class="titem">Custom ASIC</div>
+    <div class="titem">Split Computing</div>
+    <div class="titem">MobiCom Research</div>
+    <div class="titem">28nm FD-SOI</div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="prob-bg" id="problem">
+  <div class="mxw">
+    <div class="prob-grid">
+
+      <div class="sc-stack rv">
+        <div class="sc">
+          <div class="sc-hd">
+            <span class="sc-num">01</span>
+            <div class="sc-icon i-rec">🎥</div>
+            <span class="sc-title">First-Person Recording</span>
+          </div>
+          <p class="sc-body">Capture life as you live it — hands-free, always rolling, from exactly your point of view. On-device vision decides what's worth keeping, privately, without a cloud upload.</p>
+          <div class="sc-tags">
+            <span class="tag">Sports & outdoor</span>
+            <span class="tag">Parenting moments</span>
+            <span class="tag">Travel memory</span>
+          </div>
+        </div>
+
+        <div class="sc" style="margin-top:4px">
+          <div class="sc-hd">
+            <span class="sc-num">02</span>
+            <div class="sc-icon i-play">▶</div>
+            <span class="sc-title">Highlight Capture & Replay</span>
+          </div>
+          <p class="sc-body">An always-on model watches alongside you. When something worth remembering happens — a goal, a child's first steps, the perfect shot — it clips and stores the moment automatically.</p>
+          <div class="sc-tags">
+            <span class="tag">Auto-clipping</span>
+            <span class="tag">Event detection</span>
+            <span class="tag">Instant replay</span>
+          </div>
+        </div>
+
+        <div class="sc" style="margin-top:4px">
+          <div class="sc-hd">
+            <span class="sc-num">03</span>
+            <div class="sc-icon i-ai">✦</div>
+            <span class="sc-title">AI Daily Assistance</span>
+          </div>
+          <p class="sc-body">Real-time visual AI layered over everyday tasks. Sheet music recognition while practicing piano. Step-by-step visual guidance while cooking. Contextual help that appears exactly when and where you need it.</p>
+          <div class="sc-tags">
+            <span class="tag">Piano practice</span>
+            <span class="tag">Cooking guidance</span>
+            <span class="tag">Language reading</span>
+            <span class="tag">On-the-job tasks</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prob-copy rv d2">
+        <p class="lbl">The Hard Problem</p>
+        <h2 class="h2">Powerful AI.<br>Tiny glasses.<br>All-day battery.</h2>
+        <p class="bt">These three requirements have never coexisted — until now. Running a real-time vision model on a device that weighs under 50 grams and lasts all day is one of the most demanding challenges in mobile computing.</p>
+        <div class="clist">
+          <div class="ci">
+            <div class="cico cia">⚡</div>
+            <div>
+              <div class="ct">Sub-watt power budget</div>
+              <div class="cb">A glasses frame holds a 150–300 mAh battery. Every milliwatt counts. Traditional inference hardware burns 100× too much.</div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="cico cib">⏱</div>
+            <div>
+              <div class="ct">Strict real-time latency</div>
+              <div class="cb">Highlight detection, cooking guidance, and musical cues must respond in under 50 ms or the experience breaks entirely.</div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="cico cig">🔒</div>
+            <div>
+              <div class="ct">On-device privacy</div>
+              <div class="cb">First-person video is among the most sensitive data imaginable. Processing it locally — not in the cloud — is non-negotiable.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTIONS INTRO -->
+<section class="sol-intro" id="solutions">
+  <p class="lbl rv" style="display:flex;justify-content:center;">Our Research</p>
+  <h2 class="h2 rv d1">Three paths to the same goal</h2>
+  <p class="bt rv d2">We pursue three complementary hardware strategies, each optimizing a different dimension: raw capability, energy efficiency, and ecosystem leverage.</p>
+</section>
+
+<!-- SOLUTION CARDS -->
+<div class="cards-wrap">
+  <div class="cg">
+
+    <div class="sc2 sf rv">
+      <span class="sbadge bbl">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 4.5h10M1 7.5h10M4.5 1v10M7.5 1v10" stroke="currentColor" stroke-width="1.2"/></svg>
+        Approach 01 · FPGA
+      </span>
+      <div class="snum">01 / 03</div>
+      <h3 class="shl">High-Performance<br>Reconfigurable Edge</h3>
+      <p class="ssl">More powerful than ever.</p>
+      <p class="sdesc">A custom CNN accelerator built on the Lattice CrossLink-NX 28 nm FD-SOI FPGA — with a native MIPI camera interface, fine-grained clock gating, and a hardware-software co-design methodology that pushes MAC utilization far beyond off-the-shelf processors.</p>
+      <div class="sdiv"></div>
+      <div class="sr"><span class="sk">Platform</span><span class="sv svb">CrossLink-NX · 28nm FD-SOI</span></div>
+      <div class="sr"><span class="sk">Active Power</span><span class="sv svb">~200 mW</span></div>
+      <div class="sr"><span class="sk">Flexibility</span><span class="sv svb">Fully reconfigurable</span></div>
+      <div class="sr"><span class="sk">Model support</span><span class="sv svb">Custom CNN / INT8</span></div>
+    </div>
+
+    <div class="sc2 sa rv d1">
+      <span class="sbadge bba">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M6 1v2M6 9v2M1 6h2M9 6h2M2.5 2.5l1.4 1.4M8.1 8.1l1.4 1.4M2.5 9.5l1.4-1.4M8.1 3.9l1.4-1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Approach 02 · ASIC
+      </span>
+      <div class="snum">02 / 03</div>
+      <h3 class="shl">Ultra-Low Power<br>Custom Silicon</h3>
+      <p class="ssl">Unimaginably low power.</p>
+      <p class="sdesc">From FPGA prototype to full-custom ASIC tape-out. By eliminating programmable routing overhead entirely, we target a 10–30× reduction in inference energy — bringing always-on visual AI into a power envelope a 200 mAh battery can sustain all day.</p>
+      <div class="sdiv"></div>
+      <div class="sr"><span class="sk">Process</span><span class="sv sva">28nm FD-SOI → ASIC</span></div>
+      <div class="sr"><span class="sk">Power Target</span><span class="sv sva">&lt; 50 mW</span></div>
+      <div class="sr"><span class="sk">vs FPGA</span><span class="sv sva">10–30× more efficient</span></div>
+      <div class="sr"><span class="sk">Toolchain</span><span class="sv sva">Synopsys DC / GDSII</span></div>
+    </div>
+
+    <div class="sc2 sg rv d2">
+      <span class="sbadge bbg">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 3l5 2.5L11 3M1 3v6l5 2.5M11 3v6L6 11.5M6 5.5v6" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Approach 03 · Split Computing
+      </span>
+      <div class="snum">03 / 03</div>
+      <h3 class="shl">Glasses + Phone<br>Collaborative System</h3>
+      <p class="ssl">Fits into your world.</p>
+      <p class="sdesc">Why compute everything on the glasses? Your phone holds a powerful GPU. Our system dynamically splits inference — the glasses handle lightweight sensing and low-latency triggers; the phone handles heavy models. All orchestrated in real time over BLE 5.3 and Wi-Fi 6.</p>
+      <div class="sdiv"></div>
+      <div class="sr"><span class="sk">Topology</span><span class="sv svg">Glasses ↔ Phone ↔ Cloud</span></div>
+      <div class="sr"><span class="sk">Latency</span><span class="sv svg">&lt; 20ms end-to-end</span></div>
+      <div class="sr"><span class="sk">Protocol</span><span class="sv svg">BLE 5.3 / Wi-Fi 6</span></div>
+      <div class="sr"><span class="sk">Adaptation</span><span class="sv svg">Real-time dynamic</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FPGA DETAIL -->
+<section style="background:var(--ink)" id="fpga">
+  <div class="di mxw">
+    <div class="dc rv">
+      <p class="lbl" style="color:var(--blue)">Approach 01 — FPGA</p>
+      <h2 class="h2">More powerful<br>than ever.</h2>
+      <p class="bt">FPGAs let us engrave computation directly into silicon logic — not simulate it in software. For first-person capture and real-time highlight detection, this matters. When milliseconds define the experience, we build the hardware around the task.</p>
+      <ul class="fl-list" style="margin-top:32px">
+        <li class="fl-item"><span class="fld" style="background:var(--blue)"></span>Custom CNN dataflow architecture — MAC utilization far exceeds any off-the-shelf MCU solution</li>
+        <li class="fl-item"><span class="fld" style="background:var(--blue)"></span>Native MIPI CSI-2: camera pixels flow directly to compute logic with zero bridging overhead</li>
+        <li class="fl-item"><span class="fld" style="background:var(--blue)"></span>Fine-grained clock gating + duty-cycle control compresses average power to under 30 mW at 5% duty cycle</li>
+        <li class="fl-item"><span class="fld" style="background:var(--blue)"></span>Fully reconfigurable — iterate on model architecture without changing a single piece of hardware</li>
+      </ul>
+    </div>
+    <div class="vb vbbl rv d2">
+      <div class="fgbg">
+        <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+        <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+        <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+        <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+        <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+        <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+        <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+      </div>
+      <div class="fbg">
+        <div class="fb fbon">DSP</div><div class="fb fbon">CNN</div><div class="fb fbof">I/O</div>
+        <div class="fb fbof">ROM</div><div class="fb fbon">LUT</div><div class="fb fbon">MAC</div>
+        <div class="fb fbon">BUF</div><div class="fb fbof">PLL</div><div class="fb fbon">MEM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ASIC DETAIL -->
+<section style="background:var(--black)" id="asic">
+  <div class="di fl mxw">
+    <div class="dc rv">
+      <p class="lbl" style="color:var(--amber)">Approach 02 — ASIC</p>
+      <h2 class="h2">Unimaginably<br>low power.</h2>
+      <p class="bt">The FPGA proves the architecture. The ASIC perfects it. Strip away the entire programmable fabric — keep only the computation. This is how you make a vision model run all day on a battery smaller than a thumbnail.</p>
+      <ul class="fl-list" style="margin-top:32px">
+        <li class="fl-item"><span class="fld" style="background:var(--amber)"></span>Eliminate FPGA routing overhead — identical workload at 10–30× lower energy per inference</li>
+        <li class="fl-item"><span class="fld" style="background:var(--amber)"></span>Quantization-aware training co-designed with the hardware — INT4 with &lt;1% accuracy loss</li>
+        <li class="fl-item"><span class="fld" style="background:var(--amber)"></span>Complete RTL-to-GDSII validation via Synopsys Design Compiler, ready to inform tape-out decisions</li>
+        <li class="fl-item"><span class="fld" style="background:var(--amber)"></span>Direct benchmark against GAP9 and MAX78000, with clear quantitative efficiency claims</li>
+      </ul>
+    </div>
+    <div class="vb vba rv d2">
+      <div class="av">
+        <div class="pd">63</div>
+        <div class="pu">mW ACTIVE</div>
+        <div style="margin-bottom:8px"><div class="pbw"><div class="pb pb1"></div></div><div class="pc">ASIC TARGET</div></div>
+        <div><div class="pbw"><div class="pb pb2" style="animation:none;opacity:1"></div></div><div class="pc">FPGA BASELINE (200 mW)</div></div>
+        <div class="ps2">3.2× lower energy per inference</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT DETAIL -->
+<section style="background:var(--ink)" id="split">
+  <div class="di mxw">
+    <div class="dc rv">
+      <p class="lbl" style="color:var(--green)">Approach 03 — Split Computing</p>
+      <h2 class="h2">Fits into<br>your world.</h2>
+      <p class="bt">The most powerful computer near your glasses is already in your pocket. Our split computing framework makes glasses and phone function as a single unified inference engine — the glasses decide, in real time, what to compute locally and what to delegate.</p>
+      <ul class="fl-list" style="margin-top:32px">
+        <li class="fl-item"><span class="fld" style="background:var(--green)"></span>Runtime task scheduler senses complexity, battery state, and link quality — then allocates computation optimally</li>
+        <li class="fl-item"><span class="fld" style="background:var(--green)"></span>Dual-mode: BLE 5.3 for low-latency triggers, Wi-Fi 6 for high-bandwidth model offload</li>
+        <li class="fl-item"><span class="fld" style="background:var(--green)"></span>Glasses retain a featherweight always-on model; phone handles heavy lifting on demand</li>
+        <li class="fl-item"><span class="fld" style="background:var(--green)"></span>Zero extra hardware cost — leverages the GPU already in every modern smartphone</li>
+      </ul>
+    </div>
+    <div class="vb vbg rv d2">
+      <div class="spv">
+        <div class="nl2">
+          <div class="edge e1"></div>
+          <div class="edge e2"></div>
+          <div class="nd ndg">SMART<br>GLASS</div>
+          <div class="nd ndp">PHONE<br>GPU</div>
+          <div class="nd ndc">CLOUD<br>API</div>
+          <div class="scap">ADAPTIVE TASK OFFLOADING</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="cmp" id="compare">
+  <div class="mxw">
+    <div class="cmph rv">
+      <p class="lbl" style="display:flex;justify-content:center">Side by Side</p>
+      <h2 class="h2">Three approaches. One table.</h2>
+      <p class="bt" style="max-width:500px;margin:0 auto">Each approach makes different bets. Here's what they look like head-to-head.</p>
+    </div>
+    <table class="ctbl rv d1">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th style="color:var(--blue)">FPGA</th>
+          <th style="color:var(--amber)">ASIC</th>
+          <th style="color:var(--green)">Split Computing</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Active power</td><td class="tm">~200 mW</td><td class="tg">&lt; 50 mW</td><td class="tg">&lt; 30 mW on-glasses</td></tr>
+        <tr><td>Inference latency</td><td class="tg">&lt; 20 ms</td><td class="tg">&lt; 10 ms</td><td class="tm">20–50 ms</td></tr>
+        <tr><td>Model flexibility</td><td class="tg">High — reprogrammable</td><td class="td">Low — fixed architecture</td><td class="tg">Very high</td></tr>
+        <tr><td>Development time</td><td class="tm">Weeks</td><td class="td">Months (incl. tape-out)</td><td class="tg">Days</td></tr>
+        <tr><td>Network dependency</td><td class="tg">None</td><td class="tg">None</td><td class="td">Requires BLE / Wi-Fi</td></tr>
+        <tr><td>Privacy guarantee</td><td class="tg">Full on-device</td><td class="tg">Full on-device</td><td class="tm">Partial (task-dependent)</td></tr>
+        <tr><td>Target venue</td><td class="tg">DAC · ISSCC</td><td class="tg">ISSCC · JSSC</td><td class="tg">MobiCom · MobiSys</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cg2"></div>
+  <p class="lbl rv" style="display:flex;justify-content:center">Get Involved</p>
+  <h2 class="h2 rv d1">The next generation<br>of smart glasses<br>starts here.</h2>
+  <p class="bt rv d2">We're looking for collaborators, students, and industry partners who share our conviction that intelligence belongs at the edge of human experience — not in a data center.</p>
+  <div class="rv d3" style="display:flex;gap:14px;justify-content:center">
+    <a href="mailto:lab@smartvision.edu" class="pill ps">Contact the Lab</a>
+    <a href="#" class="pill po">View Publications</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fr">
+    <span class="fbrand">© 2025 SmartVision Research Lab</span>
+    <ul class="flinks">
+      <li><a href="#">About</a></li>
+      <li><a href="#">Publications</a></li>
+      <li><a href="#">Open Source</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+const cr=document.getElementById('cr'),crr=document.getElementById('crr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cr.style.left=mx+'px';cr.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;crr.style.left=rx+'px';crr.style.top=ry+'px';requestAnimationFrame(loop);})();
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

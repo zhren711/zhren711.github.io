@@ -1,5 +1,8 @@
 # main links links
 main:
+  - title: "Research"
+    url: /smart-glasses-research.html
+
   - title: "Publications"
     url: /publications/
 
